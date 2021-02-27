@@ -1,26 +1,32 @@
 import { Router, Request, Response } from "express";
-import { body, validationResult } from "express-validator";
+import { validationResult } from "express-validator";
+import {
+  emailValidation,
+  passwordValidation,
+  phoneValidation,
+} from "../validators";
 import { InvalidParamsError } from "../errors";
+import { createUser } from "../services";
+import { SignUpUserDto } from "../dtos";
 
 export const signupRouter = (router: Router) => {
   router.post(
     "/users/signup",
-    body("email").isEmail().withMessage("Email must be valid"),
-    body("password")
-      .trim()
-      .isLength({ min: 5 })
-      .withMessage("Password must have the min of 5 characters"),
-    (req: Request, res: Response) => {
+    [emailValidation(), passwordValidation(), phoneValidation()],
+    async (req: Request<{}, {}, SignUpUserDto>, res: Response) => {
       const errors = validationResult(req);
 
       if (!errors.isEmpty()) {
-        throw new InvalidParamsError("Invalid Credentials");
+        throw new InvalidParamsError(errors.array());
       }
-      const { email, password } = req.body;
+
+      const { email, password, phone } = req.body;
 
       console.log(`Signing up a new user: ${email}`);
 
-      res.send({ email, password });
+      const user = await createUser({ email, password, phone });
+
+      res.send({ user: user.email });
     }
   );
 };
