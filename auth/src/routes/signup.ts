@@ -4,6 +4,7 @@ import {
   emailValidation,
   passwordValidation,
   phoneValidation,
+  emailIsUniquelValidation,
 } from "../validators";
 import { InvalidParamsError } from "../errors";
 import { createUser } from "../services";
@@ -12,7 +13,12 @@ import { SignUpUserDto } from "../dtos";
 export const signupRouter = (router: Router) => {
   router.post(
     "/users/signup",
-    [emailValidation(), passwordValidation(), phoneValidation()],
+    [
+      emailValidation(),
+      emailIsUniquelValidation(),
+      passwordValidation(),
+      phoneValidation(),
+    ],
     async (req: Request<{}, {}, SignUpUserDto>, res: Response) => {
       const errors = validationResult(req);
 
