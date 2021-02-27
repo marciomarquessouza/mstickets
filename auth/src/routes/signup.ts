@@ -26,7 +26,7 @@ export const signupRouter = (router: Router) => {
 
       const user = await createUser({ email, password, phone });
 
-      res.send({ user: user.email });
+      res.status(201).send({ email: user.email });
     }
   );
 };
