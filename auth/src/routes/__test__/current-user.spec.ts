@@ -1,19 +1,11 @@
 import request from "supertest";
 import app from "../../config/app";
+import { signUpForTests } from "../../helpers";
 
 describe("#/api/users/currentuser", () => {
-  describe("when request the Sign Out", () => {
-    it("clears the cookie after signing out", async () => {
-      const authResponse = await request(app)
-        .post("/api/users/signup")
-        .send({
-          email: "test@test.com",
-          password: "password",
-          phone: 5519998385035,
-        })
-        .expect(201);
-
-      const cookie = authResponse.get("Set-Cookie");
+  describe("when request the current user", () => {
+    it("returns the current user data", async () => {
+      const cookie = await signUpForTests();
 
       const response = await request(app)
         .get("/api/users/currentuser")
@@ -22,6 +14,15 @@ describe("#/api/users/currentuser", () => {
         .expect(200);
 
       expect(response.body.currentUser.email).toEqual("test@test.com");
+    });
+  });
+
+  describe("when request the current user, but it is not authorized", () => {
+    it("returns 401", async () => {
+      const response = await request(app)
+        .get("/api/users/currentuser")
+        .send()
+        .expect(401);
     });
   });
 });
