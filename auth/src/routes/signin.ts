@@ -18,11 +18,13 @@ export const signinRouter = (router: Router) => {
 
       const credentials: SignInCredentialsDto = req.body;
 
-      const jwt = await signInService(credentials);
+      const userJwt = await signInService(credentials);
 
-      req.session = { jwt };
+      req.session = {
+        jwt: userJwt,
+      };
 
-      res.status(200).send({ token: jwt });
+      res.status(200).send({ token: userJwt });
     }
   );
 };

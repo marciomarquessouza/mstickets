@@ -1,6 +1,6 @@
-import cookieSession from "cookie-session";
+import session from "cookie-session";
 
-export const cookie = cookieSession({
+export const cookieSession = session({
   signed: false,
   secure: true,
 });

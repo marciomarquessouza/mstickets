@@ -22,11 +22,13 @@ export const signupRouter = (router: Router) => {
 
       const credentials: SignUpCredentialsDto = req.body;
 
-      const jwt = await signUpService(credentials);
+      const userJwt = await signUpService(credentials);
 
-      req.session = { jwt };
+      req.session = {
+        jwt: userJwt,
+      };
 
-      res.status(201).send({ token: jwt });
+      res.status(201).send({ token: userJwt });
     }
   );
 };
