@@ -4,35 +4,29 @@ import {
   emailValidation,
   passwordValidation,
   phoneValidation,
-  emailIsUniquelValidation,
 } from "../validators";
 import { InvalidParamsError } from "../errors";
-import { createUser } from "../services";
-import { SignUpUserDto } from "../dtos";
+import { signUpService } from "../services";
+import { SignUpCredentialsDto } from "../dtos";
 
 export const signupRouter = (router: Router) => {
   router.post(
     "/users/signup",
-    [
-      emailValidation(),
-      emailIsUniquelValidation(),
-      passwordValidation(),
-      phoneValidation(),
-    ],
-    async (req: Request<{}, {}, SignUpUserDto>, res: Response) => {
+    [emailValidation("unique"), passwordValidation(), phoneValidation()],
+    async (req: Request<{}, {}, SignUpCredentialsDto>, res: Response) => {
       const errors = validationResult(req);
 
       if (!errors.isEmpty()) {
         throw new InvalidParamsError(errors.array());
       }
 
-      const { email, password, phone } = req.body;
+      const credentials: SignUpCredentialsDto = req.body;
 
-      console.log(`Signing up a new user: ${email}`);
+      const jwt = await signUpService(credentials);
 
-      const user = await createUser({ email, password, phone });
+      req.session = { jwt };
 
-      res.status(201).send({ email: user.email });
+      res.status(201).send({ token: jwt });
     }
   );
 };
