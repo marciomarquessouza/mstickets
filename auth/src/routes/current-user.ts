@@ -1,18 +1,14 @@
 import { Router, Request, Response } from "express";
-import { verifyJwt } from "../utils";
+import { currentUser, requireAuth } from "../middlewares";
 
 export const currentUserRouter = (router: Router) => {
-  router.get("/users/currentuser", (req: Request, res: Response) => {
-    if (!req.session?.jwt) {
-      console.log("HERE");
-      return res.send({ currentUser: null });
+  router.get(
+    "/users/currentuser",
+    currentUser,
+    requireAuth,
+    (req: Request, res: Response) => {
+      const currentUser = req.currentUser || null;
+      res.send({ currentUser });
     }
-
-    try {
-      const payload = verifyJwt({ token: req.session.jwt });
-      return res.send({ currentUser: payload });
-    } catch (error) {
-      return res.send({ currentUser: null });
-    }
-  });
+  );
 };

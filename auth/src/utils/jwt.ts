@@ -15,10 +15,11 @@ export function createJwt({ id, email }: ICreateJwt): string {
       id,
       email,
     },
-    process.env.JWT_KEY!
+    process.env.JWT_KEY || "my_secret"
   );
 }
 
-export function verifyJwt({ token }: IVerifyJwt) {
-  return jwt.verify(token, process.env.JWT_KEY!);
+export function verifyJwt<T>({ token }: IVerifyJwt): T {
+  const payload: any = jwt.verify(token, process.env.JWT_KEY || "my_secret");
+  return payload;
 }

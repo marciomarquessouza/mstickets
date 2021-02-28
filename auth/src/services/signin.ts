@@ -17,7 +17,7 @@ export async function signInService(
       throw new BadRequestError("Invalid Credentials");
     }
 
-    console.log(`Signing in a new user: ${email}`);
+    console.log(`Signing in the user: ${email}`);
 
     const jwt = createJwt({ id, email });
 
